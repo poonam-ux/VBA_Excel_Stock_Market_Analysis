@@ -14,3 +14,5 @@
 
 ## Bonus:
   * Find and display the stock with the “Greatest % increase”, “Greatest % decrease” and “Greatest total volume”.
+  
+  ![](https://github.com/poonam-ux/Stock_Market_Analysis_VBA_Excel/blob/main/Images/Stock_Market_Analysis_2014.png)
