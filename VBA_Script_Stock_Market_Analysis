@@ -1,0 +1,131 @@
+Sub StockMarketAnalysis():
+        
+    ' ---------------------------------
+    ' Loop through all worksheets
+    ' ---------------------------------
+    For Each ws In Worksheets
+        ' Set initial variables
+        Dim Ticker_Name As String
+        Dim Total_Stock_Volume As Double
+        Dim Yearly_Open As Double
+        Dim Yearly_Close As Double
+        Dim Yearly_Change As Double
+        Dim Percent_Change As Double
+        Dim Starting_Row As Long
+        Dim Greatest_Increase As Double
+        Dim Greatest_Decrease As Double
+        Dim Greatest_Total_Volume As Double
+        Dim Summary_Table_Row As Long
+        Dim LastRowValue As Long
+        Dim LastRow As Long
+        Dim find_row As Long
+        
+        ' Column Headers/Titles to display Results
+        ws.Range("I1").Value = "Ticker"
+        ws.Range("J1").Value = "Yearly Change"
+        ws.Range("K1").Value = "Percent Change"
+        ws.Range("L1").Value = "Total Stock Volume"
+        ws.Range("O2").Value = "Greatest % Increase"
+        ws.Range("O3").Value = "Greatest % Decrease"
+        ws.Range("O4").Value = "Greatest Total Volume"
+        ws.Range("P1").Value = "Ticker"
+        ws.Range("Q1").Value = "Value"
+
+        ' Set Default Variables
+        Total_Stock_Volume = 0
+        Greatest_Increase = 0
+        Greatest_Decrease = 0
+        Greatest_Total_Volume = 0
+        Starting_Row = 2
+        Summary_Table_Row = 2
+
+        ' Determine the Last Row
+        LastRow = ws.Cells(Rows.Count, 1).End(xlUp).Row
+        
+        For i = 2 To LastRow
+
+            ' Find out new Total Stock Volume
+            Total_Stock_Volume = Total_Stock_Volume + ws.Cells(i, 7).Value
+            
+            ' Check if we are still within the same ticker name, if we are not...
+            If ws.Cells(i + 1, 1).Value <> ws.Cells(i, 1).Value Then
+                
+                Ticker_Name = ws.Cells(i, 1).Value
+                ' Print the ticker name in the summary table
+                ws.Range("I" & Summary_Table_Row).Value = Ticker_Name
+                ' Print the total stock amount in the summary table
+                ws.Range("L" & Summary_Table_Row).Value = Total_Stock_Volume
+                ' Reset Ticker Total
+                Total_Stock_Volume = 0
+                
+                ' Set yearly open, yearly close and yearly change values
+                Yearly_Open = ws.Range("C" & Starting_Row)
+                Yearly_Close = ws.Range("F" & i)
+                Yearly_Change = Yearly_Close - Yearly_Open
+                ws.Range("J" & Summary_Table_Row).Value = Yearly_Change
+
+                ' Find  Percent Change
+                If Yearly_Open = 0 Then
+                    Percent_Change = 0
+                Else
+                    Yearly_Open = ws.Range("C" & Starting_Row)
+                    Percent_Change = Yearly_Change / Yearly_Open
+                End If
+                
+                ' Format Percent Change values
+                Percent_Change = Round(Percent_Change * 100, 2)
+                ws.Range("K" & Summary_Table_Row).Value = "%" & Percent_Change
+
+                ' Conditional formatting- highlight positive numbers with green, and negative with red
+                If ws.Range("J" & Summary_Table_Row).Value >= 0 Then
+                    ws.Range("J" & Summary_Table_Row).Interior.ColorIndex = 4
+                Else
+                    ws.Range("J" & Summary_Table_Row).Interior.ColorIndex = 3
+                End If
+            
+                ' Add one to the summary table row
+                Summary_Table_Row = Summary_Table_Row + 1
+                Starting_Row = i + 1
+                End If
+            Next i
+
+            ' Find greatest % increase, greatest % decrease and greatest total stock volume
+            LastRow = ws.Cells(Rows.Count, 11).End(xlUp).Row
+        
+            ' Start loop to find results
+            For i = 2 To LastRow
+                If ws.Range("K" & i).Value > ws.Range("Q2").Value Then
+                    ws.Range("Q2").Value = ws.Range("K" & i).Value
+                    ws.Range("P2").Value = ws.Range("I" & i).Value
+                End If
+
+                If ws.Range("K" & i).Value < ws.Range("Q3").Value Then
+                    ws.Range("Q3").Value = ws.Range("K" & i).Value
+                    ws.Range("P3").Value = ws.Range("I" & i).Value
+                End If
+
+                If ws.Range("L" & i).Value > ws.Range("Q4").Value Then
+                    ws.Range("Q4").Value = ws.Range("L" & i).Value
+                    ws.Range("P4").Value = ws.Range("I" & i).Value
+                End If
+
+            Next i
+            
+            ' Format table columns to auto-fit
+            ws.Columns("I:Q").AutoFit
+
+    Next ws
+
+End Sub
+
+Sub Stock_Market_Analysis()
+'
+' Stock_Market_Analysis Macro
+'
+
+'
+    ActiveWindow.ScrollRow = 915
+    ActiveWindow.ScrollRow = 1
+    Selection.ClearContents
+    Sheets("2014").Select
+End Sub
